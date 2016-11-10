@@ -25,6 +25,7 @@ class Clndr
   @@constraints ={}
   @@force_six_rows= true
   @@custom_classes = {}
+  @@separate_javascript = false
   # todo check for available events and targets
   # rails like config
   def self.configure
@@ -44,6 +45,7 @@ class Clndr
     @@constraints ={}
     @@force_six_rows= true
     @@custom_classes = {}
+    @@separate_javascript = false
     self
   end
 
@@ -106,6 +108,10 @@ class Clndr
 
   def self.force_six_rows=(boolean)
     @@force_six_rows= boolean
+  end
+
+  def self.separate_javascript=(boolean)
+    @@separate_javascript = boolean
   end
 
   def self.classes

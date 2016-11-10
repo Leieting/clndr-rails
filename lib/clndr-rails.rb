@@ -56,6 +56,7 @@ class Clndr
     @force_six_rows =@@force_six_rows
     @custom_classes = @@custom_classes
     @has_multiday= false
+    @separate_javascript = @@separate_javascript
     @events =[]
     @@calendar_basket.merge! Hash[@name,self]
   end
@@ -74,37 +75,43 @@ class Clndr
         css_class = 'blank-clndr-template'
     end
 
-    content_tag(:div,nil,args)do
-      content_tag(:div,nil,id:"#{@name}-clndr",class:"clearfix #{css_class}")+
-      javascript_tag("var #{@name} = $('##{@name}-clndr').clndr({
-        #{'template:'+@template+',' unless @template.nil?}
-        #{'weekOffset:'+@week_offset.to_s+',' if @week_offset==1}
-        #{'startWithMonth:\''+@start_with_month.to_s+'\',' unless @start_with_month.nil?}
-        #{'daysOfTheWeek:'+@days_of_the_week.to_s+',' unless @days_of_the_week.nil?}
-        #{build_from_hash(@click_events,'clickEvents')}
-        #{build_from_hash(@targets,'targets',true)}
-        #{'showAdjacentMonths:'+@show_adjacent_months.to_s+',' unless @show_adjacent_months}
-        #{'adjacentDaysChangeMonth:'+@adjacent_days_change_month.to_s+',' if @adjacent_days_change_month}
-        #{'doneRendering:'+@done_rendering+',' unless @done_rendering.nil?}
-        #{'forceSixRows:'+@force_six_rows.to_s+',' if @force_six_rows}
-        #{build_from_hash(@custom_classes, 'classes',true)}
-        #{ if @constraints.length >0
-             build_from_hash @constraints, 'constraints', true
-           end}
-        #{if @has_multiday
-          "multiDayEvents: {
-            startDate: 'startDate',
-            endDate: 'endDate',
-            singleDay: 'date'
-          },"
-                   end}
-        #{if @events.length > 0
-            'events:['+build_events+']'
-          end}
-          });".gsub(/\n\s*\n/,"\n"))
-
-
+    content_tag(:div,nil,args) do
+      if @separate_javascript
+        content_tag(:div,nil,id:"#{@name}-clndr",class:"clearfix #{css_class}")
+      else
+        content_tag(:div,nil,id:"#{@name}-clndr",class:"clearfix #{css_class}")+
+        javascript
       end
+    end
+  end
+
+  def javascript
+    javascript_tag("var #{@name} = $('##{@name}-clndr').clndr({
+      #{'template:'+@template+',' unless @template.nil?}
+      #{'weekOffset:'+@week_offset.to_s+',' if @week_offset==1}
+      #{'startWithMonth:\''+@start_with_month.to_s+'\',' unless @start_with_month.nil?}
+      #{'daysOfTheWeek:'+@days_of_the_week.to_s+',' unless @days_of_the_week.nil?}
+      #{build_from_hash(@click_events,'clickEvents')}
+      #{build_from_hash(@targets,'targets',true)}
+      #{'showAdjacentMonths:'+@show_adjacent_months.to_s+',' unless @show_adjacent_months}
+      #{'adjacentDaysChangeMonth:'+@adjacent_days_change_month.to_s+',' if @adjacent_days_change_month}
+      #{'doneRendering:'+@done_rendering+',' unless @done_rendering.nil?}
+      #{'forceSixRows:'+@force_six_rows.to_s+',' if @force_six_rows}
+      #{build_from_hash(@custom_classes, 'classes',true)}
+      #{ if @constraints.length >0
+           build_from_hash @constraints, 'constraints', true
+         end}
+      #{if @has_multiday
+        "multiDayEvents: {
+          startDate: 'startDate',
+          endDate: 'endDate',
+          singleDay: 'date'
+        },"
+                 end}
+      #{if @events.length > 0
+          'events:['+build_events+']'
+        end}
+        });".gsub(/\n\s*\n/,"\n"))
   end
 
   def week_offset=(boolean)
@@ -227,4 +234,3 @@ class Clndr
     list_of_events
   end
 end
-
