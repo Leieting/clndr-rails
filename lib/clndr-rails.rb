@@ -63,16 +63,19 @@ class Clndr
 
   #   return html of calendar
   def view(args=nil)
-
-    case @template
-      when Clndr::Template::FULL
-        css_class = 'full-clndr-template'
-      when Clndr::Template::MINI
-        css_class = 'mini-clndr-template'
-      when Clndr::Template::SIMPLE
-        css_class = 'simple-clndr-template'
-      else
-        css_class = 'blank-clndr-template'
+    css_class = if @template_name
+      "#{@template_name}-clndr-template"
+    else
+      case @template
+        when Clndr::Template::FULL
+          'full-clndr-template'
+        when Clndr::Template::MINI
+          'mini-clndr-template'
+        when Clndr::Template::SIMPLE
+          'simple-clndr-template'
+        else
+          'blank-clndr-template'
+      end
     end
 
     content_tag(:div,nil,args) do
@@ -182,6 +185,14 @@ class Clndr
 
   def custom_inactive_class=(css_class)
     @custom_classes[:inactive]=css_class
+  end
+
+  def template_name=(name)
+    @template_name = name.to_s
+  end
+
+  def template_name
+    @template_name
   end
 
   # add event to events array
